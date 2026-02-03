@@ -22,6 +22,13 @@ export class CinetPayService extends PaymentProviderInterface {
       .replace(/[#/$_&]/g, " ")
       .substring(0, 100);
 
+    // Ensure notify_url has a valid value
+    const notifyUrl =
+      paymentData.notifyUrl ||
+      process.env.CINETPAY_WEBHOOK_NOTIFY_URL || 
+      process.env.WEBHOOK_NOTIFY_URL ||
+      paymentData.successUrl; // Fallback to successUrl if no notifyUrl configured
+
     const payload = {
       apikey: this.apiKey,
       site_id: this.siteId,
@@ -32,15 +39,15 @@ export class CinetPayService extends PaymentProviderInterface {
       customer_id: paymentData.customerId || paymentData.customerEmail,
       customer_name: paymentData.customerName || "Customer",
       customer_surname: paymentData.customerSurname || "User",
-      customer_phone_number: paymentData.customerPhoneNumber || "+22500000000",
+      customer_phone_number: paymentData.customerPhoneNumber || "+23700000000",
       customer_email: paymentData.customerEmail,
       customer_address: paymentData.customerAddress || "N/A",
       customer_city: paymentData.customerCity || "N/A",
-      customer_country: paymentData.countryCode || "CI",
+      customer_country: paymentData.countryCode || "CM",
       customer_state:
-        paymentData.customerState || paymentData.countryCode || "CI",
+        paymentData.customerState || paymentData.countryCode || "CM",
       customer_zip_code: paymentData.customerZipCode || "00000",
-      notify_url: paymentData.notifyUrl,
+      notify_url: notifyUrl,
       return_url: paymentData.successUrl,
       channels: paymentData.channels || "ALL",
       lock_phone_number: paymentData.lockPhoneNumber || false,
