@@ -48,6 +48,14 @@ const seedProviders = async () => {
                 supportCard: true,
                 supportMobileMoney: true,
                 credentialsEncrypted: null // Keep it null, managed by .env
+            },
+            {
+                code: "KKIAPAY",
+                name: "KKiaPay",
+                isActive: true,
+                supportCard: true,
+                supportMobileMoney: true,
+                credentialsEncrypted: null // Keep it null, managed by .env
             }
         ];
 
@@ -85,6 +93,13 @@ const seedProviders = async () => {
                 providerId: createdProviders["CINETPAY"].id,
                 countryCode: "GN", // Guinée
                 currency: "GNF",
+                priority: 1
+            },
+            // KKiaPay for Benin (XOF)
+            {
+                providerId: createdProviders["KKIAPAY"].id,
+                countryCode: "BJ", // Bénin
+                currency: "XOF",
                 priority: 1
             },
             // Stripe as Global Default (Wildcard)

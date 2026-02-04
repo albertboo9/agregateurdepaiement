@@ -6,5 +6,6 @@ const router = Router();
 
 router.post("/cinetpay", catchAsync(WebhookController.cinetpay));
 router.post("/stripe", catchAsync(WebhookController.stripe));
+router.post("/kkiapay", catchAsync(WebhookController.kkiapay));
 
 export default router;

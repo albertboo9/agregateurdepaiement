@@ -129,6 +129,7 @@ export class OrchestratorService {
       paymentIntentId: String(intent.id),
       transactionNumber: result.attempt.transactionNumber,
       redirectUrl: result.providerResponse?.redirectUrl, // Standardized by adapters
+      widgetParams: result.providerResponse?.widgetParams, // For KKiaPay widget
       provider: result.provider.name,
       clientSecret:
         result.providerResponse?.clientSecret ||

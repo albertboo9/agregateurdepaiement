@@ -1,22 +1,29 @@
-import puppeteer from 'puppeteer';
+import puppeteer from "puppeteer";
 
 /**
  * Service to generate professional PDF invoices
  */
 export class InvoiceService {
-    /**
-     * Generate a PDF invoice for a payment intent
-     * @param {Object} intent 
-     * @param {Object} order 
-     * @returns {Promise<Buffer>}
-     */
-    static async generateInvoiceBuffer(intent, order) {
-        const browser = await puppeteer.launch({
-            args: ['--no-sandbox', '--disable-setuid-sandbox']
-        });
-        const page = await browser.newPage();
+  /**
+   * Generate a PDF invoice for a payment intent
+   * @param {Object} intent
+   * @param {Object} order
+   * @returns {Promise<Buffer>}
+   */
+  static async generateInvoiceBuffer(intent, order) {
+    const browser = await puppeteer.launch({
+      executablePath:
+        process.env.PUPPETEER_EXECUTABLE_PATH || "/usr/bin/chromium-browser",
+      args: [
+        "--no-sandbox",
+        "--disable-setuid-sandbox",
+        "--disable-setuid-sandbox",
+        "--disable-dev-shm-usage",
+      ],
+    });
+    const page = await browser.newPage();
 
-        const htmlContent = `
+    const htmlContent = `
     <!DOCTYPE html>
     <html lang="fr">
     <head>
@@ -50,7 +57,7 @@ export class InvoiceService {
                                 </td>
                                 <td>
                                     Facture #: ${intent.id}<br>
-                                    Date: ${new Date().toLocaleDateString('fr-FR')}<br>
+                                    Date: ${new Date().toLocaleDateString("fr-FR")}<br>
                                     Référence: ${order.reference}
                                 </td>
                             </tr>
@@ -95,10 +102,10 @@ export class InvoiceService {
     </html>
     `;
 
-        await page.setContent(htmlContent);
-        const pdfBuffer = await page.pdf({ format: 'A4' });
+    await page.setContent(htmlContent);
+    const pdfBuffer = await page.pdf({ format: "A4" });
 
-        await browser.close();
-        return pdfBuffer;
-    }
+    await browser.close();
+    return pdfBuffer;
+  }
 }

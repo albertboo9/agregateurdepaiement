@@ -27,4 +27,18 @@ export class WebhookController {
 
         res.status(HttpStatus.OK).json({ received: true });
     }
+
+    /**
+     * Handle KKiaPay Webhooks
+     */
+    static async kkiapay(req, res) {
+        console.log("[Webhook] Received KKiaPay notification");
+
+        const signature = req.headers['x-kkiapay-signature'] || req.headers['signature'];
+
+        // Process async
+        await WebhookProcessor.processEvent('kkiapay', req.body, signature);
+
+        res.status(HttpStatus.OK).json({ received: true });
+    }
 }

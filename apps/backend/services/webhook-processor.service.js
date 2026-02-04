@@ -42,6 +42,12 @@ export class WebhookProcessor {
           stripeObj?.metadata?.transactionNumber ||
           stripeObj?.client_reference_id ||
           stripeObj?.id;
+      } else if (providerCode === "kkiapay") {
+        // KKiaPay webhook payload structure
+        transactionNumber =
+          payload.reference ||
+          payload.transaction_id ||
+          payload.metadata?.transactionNumber;
       }
 
       if (transactionNumber) {
@@ -175,6 +181,11 @@ export class WebhookProcessor {
     if (provider === "cinetpay") return payload.cpm_result === "00";
     if (provider === "stripe")
       return payload.type === "checkout.session.completed";
+    if (provider === "kkiapay") {
+      // KKiaPay success status: success, completed, successful
+      const status = payload.status || payload.state;
+      return status === "success" || status === "completed";
+    }
     return false;
   }
 
@@ -186,6 +197,13 @@ export class WebhookProcessor {
         payload.type === "checkout.session.expired" ||
         payload.type === "checkout.session.async_payment_failed"
       );
+    if (provider === "kkiapay") {
+      // KKiaPay failure status: failed, expired, cancelled
+      const status = payload.status || payload.state;
+      return (
+        status === "failed" || status === "expired" || status === "cancelled"
+      );
+    }
     return false;
   }
 
