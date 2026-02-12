@@ -8,7 +8,10 @@ export class KkiapayService extends PaymentProviderInterface {
     this.secretKey = config.secretKey || process.env.KKIAPAY_SECRET_KEY;
     this.privateKey = config.privateKey || process.env.KKIAPAY_PRIVATE_KEY;
     this.publicKey = config.publicKey || process.env.KKIAPAY_PUBLIC_KEY;
-    this.sandbox = config.sandbox !== undefined ? config.sandbox : process.env.KKIAPAY_SANDBOX === "true";
+    this.sandbox =
+      config.sandbox !== undefined
+        ? config.sandbox
+        : process.env.KKIAPAY_SANDBOX === "true";
   }
 
   /**
@@ -22,7 +25,8 @@ export class KkiapayService extends PaymentProviderInterface {
 
     try {
       // Generate unique reference
-      const reference = paymentData.transactionNumber || this.generateReference();
+      const reference =
+        paymentData.transactionNumber || this.generateReference();
 
       // Build KKiaPay widget parameters
       const widgetParams = {
@@ -34,6 +38,7 @@ export class KkiapayService extends PaymentProviderInterface {
         name: paymentData.customerName || "Customer",
         surname: paymentData.customerSurname || "User",
         reference: reference,
+        partnerId: reference, // Explicitement pour qu'il soit renvoyé dans les webhooks
         callback_url: paymentData.successUrl,
         return_url: paymentData.successUrl,
         cancel_url: paymentData.cancelUrl,
@@ -44,7 +49,10 @@ export class KkiapayService extends PaymentProviderInterface {
         },
       };
 
-      console.log("[KkiapayService] Created payment params with reference:", reference);
+      console.log(
+        "[KkiapayService] Created payment params with reference:",
+        reference,
+      );
 
       // Return widget parameters - frontend will open KKiaPay widget
       return {
@@ -72,7 +80,10 @@ export class KkiapayService extends PaymentProviderInterface {
   async checkStatus(transactionNumber) {
     if (!this.privateKey || !this.publicKey || !this.secretKey) {
       console.warn("[KkiapayService] Missing KKiaPay keys for verification");
-      return { success: false, error: "KKiaPay keys not configured for verification" };
+      return {
+        success: false,
+        error: "KKiaPay keys not configured for verification",
+      };
     }
 
     try {
@@ -81,7 +92,9 @@ export class KkiapayService extends PaymentProviderInterface {
       try {
         kkiapay = await import("@kkiapay-org/nodejs-sdk");
       } catch (e) {
-        console.warn("[KkiapayService] KKiaPay SDK not installed. Install with: npm install @kkiapay-org/nodejs-sdk");
+        console.warn(
+          "[KkiapayService] KKiaPay SDK not installed. Install with: npm install @kkiapay-org/nodejs-sdk",
+        );
         return { success: false, error: "KKiaPay SDK not installed" };
       }
 
@@ -174,10 +187,18 @@ export class KkiapayService extends PaymentProviderInterface {
     const status = String(providerStatus).toLowerCase();
 
     // KKiaPay status mapping
-    if (status === "success" || status === "completed" || status === "successful") {
+    if (
+      status === "success" ||
+      status === "completed" ||
+      status === "successful"
+    ) {
       return PaymentStatus.SUCCEEDED;
     }
-    if (status === "pending" || status === "processing" || status === "waiting") {
+    if (
+      status === "pending" ||
+      status === "processing" ||
+      status === "waiting"
+    ) {
       return PaymentStatus.PROCESSING;
     }
     if (status === "failed" || status === "failed" || status === "expired") {
